@@ -1,71 +1,397 @@
-Template for creating and submitting MAT496 capstone project.
+# Autonomous Literature Review Agent
 
-# Overview of MAT496
+A modern AI-powered literature review assistant built with **LangGraph**, **LangChain**, and **OpenAI**, demonstrating cutting-edge agentic AI concepts including RAG, tool calling, and structured outputs.
 
-In this course, we have primarily learned Langgraph. This is helpful tool to build apps which can process unstructured `text`, find information we are looking for, and present the format we choose. Some specific topics we have covered are:
+## Project Overview
 
-- Prompting
-- Structured Output 
-- Semantic Search
-- Retreaval Augmented Generation (RAG)
-- Tool calling LLMs & MCP
-- Langgraph: State, Nodes, Graph
+This agent autonomously conducts comprehensive literature reviews by:
+1. **Planning** subtopics using structured LLM outputs
+2. **Searching** the web for relevant academic sources
+3. **Fetching** and processing webpage content
+4. **Embedding** documents into a vector store (FAISS)
+5. **Retrieving** semantically relevant chunks per subtopic
+6. **Summarizing** findings with LLM-powered synthesis
+7. **Synthesizing** a complete academic literature review
 
-We also learned that Langsmith is a nice tool for debugging Langgraph codes.
+## Architecture
 
-------
+### LangGraph Workflow
 
-# Capstone Project objective
+```mermaid
+graph LR
+    A[Start] --> B[Plan Subtopics]
+    B --> C[Search Web]
+    C --> D[Fetch Pages]
+    D --> E[Chunk & Embed]
+    E --> F[Retrieve Context]
+    F --> G[Summarize Subtopics]
+    G --> H[Synthesize Review]
+    H --> I[End]
+```
 
-The first purpose of the capstone project is to give a chance to revise all the major above listed topics. The second purpose of the capstone is to show your creativity. Think about all the problems which you can not have solved earlier, but are not possible to solve with the concepts learned in this course. For example, We can use LLM to analyse all kinds of news: sports news, financial news, political news. Another example, we can use LLMs to build a legal assistant. Pretty much anything which requires lots of reading, can be outsourced to LLMs. Let your imagination run free.
+### Key Concepts Demonstrated
 
+- **State Management**: TypedDict-based state flows through the graph
+- **Node Functions**: Pure functions that transform state
+- **Structured Output**: Pydantic models for LLM responses
+- **RAG Pipeline**: Semantic search with FAISS + embeddings
+- **Tool Calling**: LLM-powered tools for search and retrieval
+- **Modular Prompts**: Templated prompts for consistency
 
--------------------------
+## Project Structure
 
-# Project report Template
+```
+project/
+├── main.py                      # Entry point & graph construction
+├── graph/
+│   ├── __init__.py
+│   ├── state.py                 # ReviewState TypedDict & Pydantic models
+│   └── nodes/                   # LangGraph node implementations
+│       ├── planner.py           # Subtopic planning with structured output
+│       ├── searcher.py          # Web search orchestration
+│       ├── fetcher.py           # Content fetching
+│       ├── chunk_embed.py       # Document chunking & embedding
+│       ├── retriever.py         # Semantic search
+│       ├── summarizer.py        # Per-subtopic summarization
+│       └── synthesizer.py       # Final review synthesis
+├── tools/
+│   ├── search_tool.py           # Brave/SerpAPI integration
+│   └── fetch_tool.py            # Web scraping utilities
+├── prompts/
+│   ├── planner_prompt.txt       # Planning prompt template
+│   ├── summarizer_prompt.txt    # Summarization template
+│   └── synthesizer_prompt.txt   # Synthesis template
+├── vectorstore/
+│   └── __init__.py              # FAISS utilities (TODO)
+├── requirements.txt
+└── README.md
+```
 
-## Title: [your title goes here]
+## Quick Start
 
-## Overview
+### 1. Installation
 
-[your overview goes here. My project does this that  etc]
+```bash
+# Clone or navigate to project directory
+cd mat496-project
 
-## Reason for picking up this project
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-Expain how this project is aligned with this course content.
+# Install dependencies
+pip install -r requirements.txt
+```
 
-## Plan
+### 2. Configuration
 
-I plan to excecute these steps to complete my project.
+Set your API keys:
 
-- [TODO] Step 1 involves blah blah
-- [TODO] Step 2 involves blah blah
-- [TODO] Step 3 involves blah blah
-- ...
-- [TODO] Step n involves blah blah
+```bash
+export OPENAI_API_KEY='your-openai-key-here'
 
-## Conclusion:
+# Optional: For web search
+export BRAVE_API_KEY='your-brave-key'
+# OR
+export SERPAPI_KEY='your-serpapi-key'
+```
 
-I had planned to achieve {this this}. I think I have/have-not achieved the conclusion satisfactorily. The reason for your satisfaction/unsatisfaction.
+### 3. Run
 
-----------
+```bash
+python main.py
+```
 
-# Added instructions:
+## Implementation Roadmap
 
-- This is a `solo assignment`. Each of you will work alone. You are free to talk, discuss with chatgpt, but you are responsible for what you submit. Some students may be called for viva. You should be able to each and every line of work submitted by you.
+### Phase 1: Core LLM Integration 
 
-- `commit` History maintenance.
-  - Fork this respository and build on top of that.
-  - For every step in your plan, there has to be a commit.
-  - Change [TODO] to [DONE] in the plan, before you commit after that step. 
-  - The commit history should show decent amount of work spread into minimum two dates. 
-  - **All the commits done in one day will be rejected**. Even if you are capable of doing the whole thing in one day, refine it in two days.  
- 
- - Deadline: Nov 30, Sunday 11:59 pm
+**Current Status**: Skeleton with placeholders
 
+**Tasks**:
+- [ ] **Planner Node** (`graph/nodes/planner.py`)
+  - [ ] Load prompt from `prompts/planner_prompt.txt`
+  - [ ] Implement OpenAI structured output API call
+  - [ ] Use `SubtopicsPlan` Pydantic model for response parsing
+  - [ ] Handle API errors and retries
 
-# Grading: total 25 marks
+- [ ] **Summarizer Node** (`graph/nodes/summarizer.py`)
+  - [ ] Load prompt template
+  - [ ] Format retrieved chunks into prompt
+  - [ ] Call OpenAI with structured output (`Summary` model)
+  - [ ] Implement token limit handling (chunk splitting if needed)
 
-- Coverage of most of topics in this class: 20
-- Creativity: 5
-  
+- [ ] **Synthesizer Node** (`graph/nodes/synthesizer.py`)
+  - [ ] Load synthesis prompt
+  - [ ] Aggregate all subtopic summaries
+  - [ ] Generate comprehensive review with proper structure
+  - [ ] Post-process output (formatting, citations)
+
+**Resources**:
+- [OpenAI Structured Outputs](https://platform.openai.com/docs/guides/structured-outputs)
+- [LangChain ChatOpenAI docs](https://python.langchain.com/docs/integrations/chat/openai)
+
+---
+
+### Phase 2: Search & Fetch Integration
+
+**Tasks**:
+- [ ] **Search Tool** (`tools/search_tool.py`)
+  - [ ] Choose search backend (Brave recommended for API simplicity)
+  - [ ] Install SDK: `pip install brave-search-python` or `google-search-results`
+  - [ ] Implement `search_brave()` with error handling
+  - [ ] Add rate limiting (respect API quotas)
+  - [ ] Return structured results (title, URL, snippet)
+
+- [ ] **Fetch Tool** (`tools/fetch_tool.py`)
+  - [ ] Consider using `trafilatura` for better text extraction
+  - [ ] Implement concurrent fetching with `ThreadPoolExecutor`
+  - [ ] Add robust error handling (timeouts, 404s, etc.)
+  - [ ] Filter out non-text content (images, PDFs without OCR)
+
+- [ ] **Searcher Node** (`graph/nodes/searcher.py`)
+  - [ ] Integrate `search_tool.search_web()`
+  - [ ] Query each subtopic's search_query
+  - [ ] Store URLs in state (consider adding `search_results` to `ReviewState`)
+
+- [ ] **Fetcher Node** (`graph/nodes/fetcher.py`)
+  - [ ] Use `fetch_tool.fetch_multiple()` for efficiency
+  - [ ] Create `Document` objects with metadata
+  - [ ] Handle fetch failures gracefully (log and continue)
+
+**Resources**:
+- [Brave Search API](https://brave.com/search/api/)
+- [SerpAPI](https://serpapi.com/)
+- [Trafilatura docs](https://trafilatura.readthedocs.io/)
+
+---
+
+### Phase 3: RAG Pipeline (Vector Store + Retrieval)
+
+**Tasks**:
+- [ ] **Chunk & Embed Node** (`graph/nodes/chunk_embed.py`)
+  - [ ] Use `RecursiveCharacterTextSplitter` from LangChain
+    ```python
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200,
+        length_function=len
+    )
+    ```
+  - [ ] Generate embeddings:
+    - Option A: OpenAI embeddings (`OpenAIEmbeddings()`)
+    - Option B: Local models (`HuggingFaceEmbeddings()`)
+  - [ ] Create FAISS index:
+    ```python
+    from langchain_community.vectorstores import FAISS
+    vector_store = FAISS.from_texts(texts, embeddings, metadatas=metadatas)
+    ```
+  - [ ] Store `vector_store` in state
+
+- [ ] **Retriever Node** (`graph/nodes/retriever.py`)
+  - [ ] For each subtopic, query vector store:
+    ```python
+    results = vector_store.similarity_search(query, k=10)
+    ```
+  - [ ] Organize retrieved chunks by subtopic
+  - [ ] Consider re-ranking (e.g., with cross-encoder) for better relevance
+
+- [ ] **Vector Store Utilities** (`vectorstore/__init__.py`)
+  - [ ] Add persistence functions:
+    ```python
+    vector_store.save_local("path/to/index")
+    FAISS.load_local("path/to/index", embeddings)
+    ```
+  - [ ] Add helper for incremental updates
+
+**Resources**:
+- [LangChain Text Splitters](https://python.langchain.com/docs/modules/data_connection/document_transformers/)
+- [FAISS documentation](https://faiss.ai/)
+- [LangChain FAISS integration](https://python.langchain.com/docs/integrations/vectorstores/faiss)
+
+---
+
+### Phase 4: Advanced Features (Optional)
+
+- [ ] **Conditional Edges**
+  - Add quality checks (e.g., if too few documents, retry search)
+  - Implement feedback loops
+
+- [ ] **MCP Tools Integration**
+  - Research Model Context Protocol
+  - Add MCP-compatible tool interfaces
+
+- [ ] **Streaming Output**
+  - Stream LLM responses for real-time feedback
+  - Add progress indicators
+
+- [ ] **Caching**
+  - Cache search results to avoid redundant API calls
+  - Cache embeddings for reused documents
+
+- [ ] **Multi-Agent Collaboration**
+  - Add specialist agents (e.g., "methodology critic", "trend analyzer")
+  - Implement agent communication protocol
+
+---
+
+### Phase 5: Production Readiness
+
+- [ ] **Error Handling**
+  - Comprehensive try-except blocks in all nodes
+  - Graceful degradation (continue with partial results)
+  - Logging with `logging` module
+
+- [ ] **Configuration Management**
+  - Create `config.yaml` for parameters (chunk size, k-value, etc.)
+  - Environment-based configs (dev/prod)
+
+- [ ] **Testing**
+  - Unit tests for each node
+  - Integration test for full graph
+  - Mock API responses for testing
+
+- [ ] **CLI Interface**
+  - Add `argparse` for command-line arguments
+  - Support for batch processing multiple topics
+  - Output format options (Markdown, PDF, JSON)
+
+- [ ] **Documentation**
+  - Add docstrings to all functions
+  - Create usage examples
+  - Add troubleshooting guide
+
+---
+
+## Implementation Tips
+
+### Starting Point
+1. **Begin with Phase 1**: Get LLM calls working with hardcoded data
+2. **Test incrementally**: Run `main.py` after each node implementation
+3. **Use mock data**: Test graph structure before adding external API calls
+
+### Debugging LangGraph
+```python
+# Enable verbose logging
+import logging
+logging.basicConfig(level=logging.DEBUG)
+
+# Print state between nodes
+def debug_node(state):
+    print(f"Current state: {state}")
+    return state
+
+workflow.add_node("debug", debug_node)
+```
+
+### Prompt Engineering Tips
+- **Be specific**: Clearly define expected output format
+- **Provide examples**: Few-shot examples improve consistency
+- **Iterate**: Test prompts in OpenAI Playground first
+- **System prompts**: Set role and constraints upfront
+
+### Managing Costs
+- Use `gpt-3.5-turbo` for development/testing
+- Switch to `gpt-4` for final synthesis only
+- Cache LLM responses during development
+- Set token limits in API calls
+
+---
+
+## State Schema
+
+```python
+ReviewState = {
+    "topic": str,                    # User's research topic
+    "subtopics": List[Subtopic],     # 3-6 planned subtopics
+    "documents": List[Document],     # Fetched web pages
+    "chunks": List[Dict],            # Chunked & embedded text
+    "summaries": List[Summary],      # Per-subtopic summaries
+    "final_review": Optional[str],   # Complete literature review
+    "vector_store": Optional[FAISS], # FAISS index
+}
+```
+
+### Pydantic Models
+
+- **`Subtopic`**: `name`, `search_query`, `rationale`
+- **`Document`**: `url`, `title`, `content`, `subtopic`
+- **`Summary`**: `subtopic`, `summary`, `key_findings`, `sources`
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**Graph execution hangs**
+- Check for infinite loops in edges
+- Ensure all nodes return updated state
+
+**FAISS errors**
+- Ensure embeddings have consistent dimensions
+- Check that `faiss-cpu` is installed (not `faiss`)
+
+**API rate limits**
+- Add sleep/retry logic in search and fetch tools
+- Use exponential backoff
+
+**Memory issues with large documents**
+- Reduce chunk size
+- Process documents in batches
+- Use streaming for embeddings
+
+---
+
+## Resources
+
+### LangGraph
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
+- [LangGraph Tutorials](https://github.com/langchain-ai/langgraph/tree/main/examples)
+
+### LangChain
+- [LangChain Docs](https://python.langchain.com/)
+- [RAG Tutorial](https://python.langchain.com/docs/use_cases/question_answering/)
+
+### OpenAI
+- [API Reference](https://platform.openai.com/docs/api-reference)
+- [Function Calling Guide](https://platform.openai.com/docs/guides/function-calling)
+
+---
+
+## Learning Objectives
+
+By completing this project, you'll master:
+-  LangGraph state management and graph construction
+-  Structured LLM outputs with Pydantic
+-  RAG pipeline implementation (chunking, embedding, retrieval)
+-  Tool calling patterns
+-  Prompt engineering for complex tasks
+-  Production-grade error handling and testing
+
+---
+
+## License
+
+MIT License - feel free to extend and adapt!
+
+---
+
+##  Current Status
+
+**Project Phase**: Skeleton
+
+**Next Steps**:
+1. Set up OpenAI API key
+2. Implement Phase 1 (LLM integration in planner node)
+3. Test with simple topic before adding search
+
+**Estimated Time to Completion**:
+- Phase 1-2: 4-6 hours
+- Phase 3: 6-8 hours
+- Phase 4-5: 8-12 hours 
+
+---
+
+**Questions or issues?** Open an issue or consult the LangGraph community!

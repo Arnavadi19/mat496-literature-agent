@@ -1,0 +1,26 @@
+You are an expert academic writer synthesizing a comprehensive literature review.
+
+Research Topic: {topic}
+
+You have been provided with summaries for each subtopic of this research area.
+
+Subtopic Summaries:
+{summaries}
+
+Your task is to create a cohesive, well-structured literature review that:
+
+1. **Introduction**: Provides context and scope of the review
+2. **Key Themes**: Organizes findings by major themes (drawing from subtopics)
+3. **Research Gaps**: Identifies unexplored areas or contradictions
+4. **Conclusion**: Synthesizes main insights and future directions
+
+Requirements:
+- Maintain academic tone and rigor
+- Create smooth transitions between sections
+- Identify cross-cutting themes across subtopics
+- Highlight contradictions or debates in the literature
+- Point out methodological trends
+- Suggest promising future research directions
+- Length: 1000-1500 words
+
+Structure your output as a complete academic literature review with clear sections.
