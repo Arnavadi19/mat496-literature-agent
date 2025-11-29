@@ -8,10 +8,10 @@ from graph.state import ReviewState
 
 def search_web(state: ReviewState) -> ReviewState:
     """
-    For each subtopic, calls search tool to obtain URLs.
+    For each subtopic, calls search tool to obtain URLs using DuckDuckGo (FREE).
     
-    TODO: Integrate with Brave Search API or SerpAPI
-    TODO: Import and use tools.search_tool
+    Uses DuckDuckGo search which requires no API keys or credit cards.
+    Falls back to placeholder URLs if search fails.
     
     Args:
         state: Current ReviewState with subtopics
@@ -21,24 +21,37 @@ def search_web(state: ReviewState) -> ReviewState:
     """
     print(f"[SEARCHER] Searching web for {len(state['subtopics'])} subtopics")
     
-    # TODO: Import from tools.search_tool import search_brave
-    # TODO: For each subtopic, call search API
-    # TODO: Collect top 3-5 URLs per subtopic
+    # Import the free search tool
+    from tools.search_tool import search_web as perform_search
     
-    # Placeholder: Add URLs to state metadata
-    # In real implementation, store URLs associated with each subtopic
     search_results: Dict[str, List[str]] = {}
     
     for subtopic in state["subtopics"]:
-        # Placeholder URLs
-        search_results[subtopic.name] = [
-            f"https://example.com/article1-{subtopic.name}",
-            f"https://example.com/article2-{subtopic.name}",
-            f"https://example.com/article3-{subtopic.name}",
-        ]
+        print(f"  Searching: {subtopic.search_query}")
+        
+        try:
+            # Use DuckDuckGo search (free, no API key needed)
+            results = perform_search(subtopic.search_query, backend="duckduckgo", num_results=5)
+            
+            # Extract URLs from search results
+            urls = [r["url"] for r in results if r.get("url")]
+            
+            # Filter out non-article URLs (optional)
+            urls = [url for url in urls if url.startswith("http")]
+            
+            search_results[subtopic.name] = urls[:5]  # Top 5 URLs
+            print(f"    Found {len(urls)} results")
+            
+        except Exception as e:
+            print(f"    ⚠️  Search failed: {e}. Using placeholder.")
+            # Fallback to placeholder URLs
+            search_results[subtopic.name] = [
+                f"https://example.com/article1-{subtopic.name}",
+                f"https://example.com/article2-{subtopic.name}",
+                f"https://example.com/article3-{subtopic.name}",
+            ]
     
-    # Store results in state (you may want to add search_results to ReviewState)
-    # For now, we'll pass it forward via documents in the next node
+    # Store results in state
     state["_search_results"] = search_results  # type: ignore
     
     return state
