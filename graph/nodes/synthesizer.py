@@ -2,7 +2,10 @@
 Synthesizer node: Creates final comprehensive literature review.
 """
 
+import os
+from pathlib import Path
 from graph.state import ReviewState
+from langchain_openai import ChatOpenAI
 
 
 def synthesize_review(state: ReviewState) -> ReviewState:
@@ -15,11 +18,6 @@ def synthesize_review(state: ReviewState) -> ReviewState:
     - Research Gaps
     - Conclusion
     
-    TODO: Load prompt from prompts/synthesizer_prompt.txt
-    TODO: Format all summaries into prompt
-    TODO: Call LLM to generate final review
-    TODO: Store in state["final_review"]
-    
     Args:
         state: ReviewState with summaries
         
@@ -28,14 +26,57 @@ def synthesize_review(state: ReviewState) -> ReviewState:
     """
     print("[SYNTHESIZER] Synthesizing final literature review")
     
-    # TODO: from langchain_openai import ChatOpenAI
-    # TODO: Load synthesizer_prompt.txt
-    # TODO: Format prompt with topic, all summaries
-    # TODO: Call LLM for final synthesis
+    # Load prompt template
+    prompt_path = Path(__file__).parent.parent.parent / "prompts" / "synthesizer_prompt.txt"
+    with open(prompt_path, 'r') as f:
+        prompt_template = f.read()
     
-    # Placeholder implementation
-    final_review = f"""
-# Literature Review: {state['topic']}
+    # Format all summaries for the prompt
+    summaries_text = ""
+    for i, summary in enumerate(state["summaries"], 1):
+        summaries_text += f"\n## Subtopic {i}: {summary.subtopic}\n\n"
+        summaries_text += f"**Summary:** {summary.summary}\n\n"
+        summaries_text += "**Key Findings:**\n"
+        for finding in summary.key_findings:
+            summaries_text += f"- {finding}\n"
+        summaries_text += f"\n**Sources:** {', '.join(summary.sources[:3])}\n"
+    
+    # Format prompt
+    prompt = prompt_template.format(
+        topic=state['topic'],
+        summaries=summaries_text
+    )
+    
+    try:
+        # Initialize LLM
+        llm = ChatOpenAI(
+            model=os.getenv("OPENAI_MODEL", "gpt-4"),
+            temperature=0.5,
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        print("  Calling OpenAI for final synthesis...")
+        
+        # Invoke LLM for final review
+        response = llm.invoke(prompt)
+        final_review = response.content
+        
+        print("  ✓ Final review synthesized")
+        
+    except Exception as e:
+        print(f"  ⚠️  Error calling OpenAI: {e}")
+        print("  Using placeholder review")
+        
+        # Fallback to placeholder
+        final_review = _create_placeholder_review(state)
+    
+    state["final_review"] = final_review
+    return state
+
+
+def _create_placeholder_review(state: ReviewState) -> str:
+    """Creates a placeholder review when LLM call fails."""
+    final_review = f"""# Literature Review: {state['topic']}
 
 ## Introduction
 This literature review synthesizes research on {state['topic']}.
@@ -54,11 +95,10 @@ This literature review synthesizes research on {state['topic']}.
     
     final_review += """
 ## Research Gaps
-[TODO: LLM will identify gaps across summaries]
+[Placeholder: OpenAI integration needed to identify gaps]
 
 ## Conclusion
-[TODO: LLM will synthesize conclusions]
+[Placeholder: OpenAI integration needed for synthesis]
 """
     
-    state["final_review"] = final_review
-    return state
+    return final_review
