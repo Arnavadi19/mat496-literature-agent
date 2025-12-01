@@ -2,8 +2,10 @@
 langchain>=0.1.0
 langchain-openai>=0.0.5
 langchain-community>=0.0.20
+langchain-text-splitters>=0.0.1
 langgraph>=0.0.20
 openai>=1.0.0
+python-dotenv>=1.0.0
 
 # Vector store and embeddings
 faiss-cpu>=1.7.4
@@ -16,7 +18,7 @@ typing-extensions>=4.5.0
 # Web scraping and search
 requests>=2.31.0
 beautifulsoup4>=4.12.0
-duckduckgo-search>=4.0.0  # Free web search - no API key required!
+ddgs>=6.0.0  # Free web search - no API key required!
 
 # Optional: Search APIs (uncomment when ready to use)
 # google-search-results>=2.4.2  # SerpAPI

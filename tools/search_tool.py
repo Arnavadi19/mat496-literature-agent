@@ -15,45 +15,46 @@ def search_duckduckgo(query: str, num_results: int = 5) -> List[Dict[str, str]]:
     """
     Search using DuckDuckGo (FREE - no API key required).
     
-    Uses the duckduckgo-search library which is completely free
+    Uses the ddgs library which is completely free
     and doesn't require any API keys or credit cards.
     
     Installation:
-        pip install duckduckgo-search
+        pip install ddgs
     
     Args:
-        query: Search query
+        query: Search query (simple keywords work best)
         num_results: Number of results to return (default: 5)
         
     Returns:
         List of dicts with 'title', 'url', 'snippet'
     """
     try:
-        from duckduckgo_search import DDGS
+        from ddgs import DDGS
         
         results = []
-        with DDGS() as ddgs:
-            # Use text search
-            search_results = ddgs.text(query, max_results=num_results)
-            
-            for r in search_results:
-                results.append({
-                    "title": r.get("title", ""),
-                    "url": r.get("href", ""),
-                    "snippet": r.get("body", "")
-                })
+        ddgs = DDGS()
+        
+        # Use text search
+        search_results = list(ddgs.text(query, max_results=num_results))
+        
+        for r in search_results:
+            results.append({
+                "title": r.get("title", ""),
+                "url": r.get("href", ""),
+                "snippet": r.get("body", "")
+            })
         
         return results
         
     except ImportError:
-        print("⚠️  duckduckgo-search not installed. Install with: pip install duckduckgo-search")
+        print("⚠️  ddgs not installed. Install with: pip install ddgs")
         print("   Using placeholder results for now.")
         # Return placeholder results if library not installed
         return [
             {
                 "title": f"Result {i+1} for {query}",
                 "url": f"https://example.com/result{i+1}",
-                "snippet": f"Placeholder snippet for result {i+1}. Install duckduckgo-search to get real results."
+                "snippet": f"Placeholder snippet for result {i+1}. Install ddgs to get real results."
             }
             for i in range(num_results)
         ]

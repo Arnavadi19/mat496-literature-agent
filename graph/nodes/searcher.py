@@ -36,11 +36,11 @@ def search_web(state: ReviewState) -> ReviewState:
             # Extract URLs from search results
             urls = [r["url"] for r in results if r.get("url")]
             
-            # Filter out non-article URLs (optional)
-            urls = [url for url in urls if url.startswith("http")]
+            # Filter out non-http URLs (keep both http and https)
+            valid_urls = [url for url in urls if url.startswith("http")]
             
-            search_results[subtopic.name] = urls[:5]  # Top 5 URLs
-            print(f"    Found {len(urls)} results")
+            search_results[subtopic.name] = valid_urls[:5]  # Top 5 URLs
+            print(f"    Found {len(valid_urls)} valid URLs")
             
         except Exception as e:
             print(f"    ⚠️  Search failed: {e}. Using placeholder.")
@@ -50,6 +50,10 @@ def search_web(state: ReviewState) -> ReviewState:
                 f"https://example.com/article2-{subtopic.name}",
                 f"https://example.com/article3-{subtopic.name}",
             ]
+    
+    # Debug: Log total URLs found
+    total_urls = sum(len(urls) for urls in search_results.values())
+    print(f"  Total URLs collected: {total_urls}")
     
     # Store results in state
     state["_search_results"] = search_results  # type: ignore

@@ -25,6 +25,10 @@ def fetch_pages(state: ReviewState) -> ReviewState:
     documents: List[Document] = []
     search_results = state.get("_search_results", {})
     
+    # Debug: Log what we received
+    total_urls = sum(len(urls) for urls in search_results.values())
+    print(f"  Received {total_urls} URLs to fetch from {len(search_results)} subtopics")
+    
     for subtopic_name, urls in search_results.items():
         print(f"  Fetching {len(urls)} URLs for: {subtopic_name}")
         
