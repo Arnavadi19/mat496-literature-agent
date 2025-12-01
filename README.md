@@ -190,50 +190,33 @@ python main.py
   - [ ] Handle fetch failures gracefully (log and continue)
 
 **Resources**:
-- [Brave Search API](https://brave.com/search/api/)
-- [SerpAPI](https://serpapi.com/)
-- [Trafilatura docs](https://trafilatura.readthedocs.io/)
+### Phase 3: RAG Pipeline (Vector Store + Retrieval) ✅ **COMPLETED**
 
----
+**Status**: ✅ Full RAG pipeline with FAISS semantic search implemented
 
-### Phase 3: RAG Pipeline (Vector Store + Retrieval)
+**Completed Tasks**:
+- [x] **Chunk & Embed Node** (`graph/nodes/chunk_embed.py`)
+  - [x] Implemented `RecursiveCharacterTextSplitter` from LangChain
+  - [x] Generate embeddings using OpenAI `OpenAIEmbeddings()`
+  - [x] Created FAISS index with metadata storage
+  - [x] Error handling with fallback to simple chunks
 
-**Tasks**:
-- [ ] **Chunk & Embed Node** (`graph/nodes/chunk_embed.py`)
-  - [ ] Use `RecursiveCharacterTextSplitter` from LangChain
-    ```python
-    from langchain.text_splitter import RecursiveCharacterTextSplitter
-    splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len
-    )
-    ```
-  - [ ] Generate embeddings:
-    - Option A: OpenAI embeddings (`OpenAIEmbeddings()`)
-    - Option B: Local models (`HuggingFaceEmbeddings()`)
-  - [ ] Create FAISS index:
-    ```python
-    from langchain_community.vectorstores import FAISS
-    vector_store = FAISS.from_texts(texts, embeddings, metadatas=metadatas)
-    ```
-  - [ ] Store `vector_store` in state
+- [x] **Retriever Node** (`graph/nodes/retriever.py`)
+  - [x] FAISS similarity search for each subtopic
+  - [x] Retrieve top-10 most relevant chunks per subtopic
+  - [x] Organize results by subtopic with metadata
+  - [x] Fallback to filtering if vector store unavailable
 
-- [ ] **Retriever Node** (`graph/nodes/retriever.py`)
-  - [ ] For each subtopic, query vector store:
-    ```python
-    results = vector_store.similarity_search(query, k=10)
-    ```
-  - [ ] Organize retrieved chunks by subtopic
-  - [ ] Consider re-ranking (e.g., with cross-encoder) for better relevance
+- [x] **Vector Store Utilities** (`vectorstore/__init__.py`)
+  - [x] Added `save_vector_store()` for persistence
+  - [x] Added `load_vector_store()` for loading saved indexes
+  - [x] Added `merge_vector_stores()` for combining indexes
 
-- [ ] **Vector Store Utilities** (`vectorstore/__init__.py`)
-  - [ ] Add persistence functions:
-    ```python
-    vector_store.save_local("path/to/index")
-    FAISS.load_local("path/to/index", embeddings)
-    ```
-  - [ ] Add helper for incremental updates
+- [x] **Fetcher Node** (`graph/nodes/fetcher.py`)
+  - [x] Integrated real URL fetching with `fetch_url()`
+  - [x] Create `Document` objects with actual web content
+  - [x] Robust error handling with placeholder fallback
+  - [x] Content truncation to avoid token limits
 
 **Resources**:
 - [LangChain Text Splitters](https://python.langchain.com/docs/modules/data_connection/document_transformers/)
@@ -410,23 +393,33 @@ MIT License - feel free to extend and adapt!
 
 ## 🚧 Current Status
 
-**Project Phase**: Phase 1 Complete ✅ | Phase 2 Search Complete ✅ | Working on Phase 3 (RAG)
+**Project Phase**: ✅ Phase 1-3 Complete | Working on Phase 4 (Advanced Features)
 
 **What's Working**:
-- ✅ LLM-powered subtopic planning with OpenAI structured output
-- ✅ Free DuckDuckGo web search (no API key required)
-- ✅ LLM-powered summarization of retrieved content
-- ✅ Final literature review synthesis via GPT-4
-- ✅ Complete LangGraph workflow with all nodes
+- ✅ **Phase 1**: LLM-powered subtopic planning, summarization, and synthesis
+- ✅ **Phase 2**: Free DuckDuckGo web search (no API key required)
+- ✅ **Phase 3**: Full RAG pipeline with FAISS semantic search
+  - Document chunking with overlap
+  - OpenAI embeddings generation
+  - FAISS vector store for semantic retrieval
+  - Real web content fetching
+- ✅ Complete end-to-end LangGraph workflow
 
-**What Needs Integration**:
-- ⏳ Phase 3: RAG Pipeline (FAISS vector store, embeddings, retrieval)
-- ⏳ Real web content fetching (currently uses placeholders)
+**What's Optional** (Phase 4-5):
+- ⏳ Advanced features (streaming, caching, MCP tools)
+- ⏳ Production hardening (comprehensive testing, CLI interface)
 
 **Next Steps**:
 1. Set `OPENAI_API_KEY` environment variable
-2. Run `python main.py` to test Phase 1 LLM integration
-3. Implement Phase 3 (RAG pipeline) for semantic search
+2. Run `python main.py` to generate a complete literature review
+3. The system will:
+   - Plan subtopics using GPT-4
+   - Search the web with DuckDuckGo
+   - Fetch and chunk real web content
+   - Create FAISS embeddings for semantic search
+   - Retrieve relevant chunks per subtopic
+   - Summarize findings with GPT-4
+   - Synthesize a complete academic literature review
 
 **Estimated Time to Completion**:
 - Phase 1-2: 4-6 hours

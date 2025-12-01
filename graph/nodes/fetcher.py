@@ -4,15 +4,15 @@ Fetcher node: Fetches webpage content for collected URLs.
 
 from typing import List
 from graph.state import ReviewState, Document
+from tools.fetch_tool import fetch_url
 
 
 def fetch_pages(state: ReviewState) -> ReviewState:
     """
     Fetches HTML content from URLs and extracts text.
     
-    TODO: Import from tools.fetch_tool
-    TODO: Implement robust error handling for failed fetches
-    TODO: Consider rate limiting and retries
+    Uses the fetch_tool to scrape actual web content.
+    Handles errors gracefully with placeholder content.
     
     Args:
         state: ReviewState with search results
@@ -22,27 +22,47 @@ def fetch_pages(state: ReviewState) -> ReviewState:
     """
     print("[FETCHER] Fetching webpage content")
     
-    # TODO: Import from tools.fetch_tool import fetch_url
-    # TODO: For each URL in search_results, fetch content
-    # TODO: Parse HTML and extract main text content
-    
     documents: List[Document] = []
-    
-    # Placeholder: Create mock documents
     search_results = state.get("_search_results", {})
     
     for subtopic_name, urls in search_results.items():
+        print(f"  Fetching {len(urls)} URLs for: {subtopic_name}")
+        
         for url in urls:
-            # In real implementation, fetch actual content
-            documents.append(
-                Document(
-                    url=url,
-                    title=f"Article about {subtopic_name}",
-                    content=f"Placeholder content for {url}. "
-                            f"This would contain actual scraped text.",
-                    subtopic=subtopic_name
-                )
-            )
+            try:
+                # Fetch actual content
+                content = fetch_url(url, timeout=10)
+                
+                if content:
+                    # Create document with actual content
+                    documents.append(
+                        Document(
+                            url=url,
+                            title=f"Article about {subtopic_name}",
+                            content=content[:10000],  # Limit to 10k chars to avoid token limits
+                            subtopic=subtopic_name
+                        )
+                    )
+                    print(f"    ✓ Fetched {len(content)} chars from {url[:50]}...")
+                else:
+                    # Fallback to placeholder if fetch fails
+                    print(f"    ⚠️  Failed to fetch {url[:50]}... Using placeholder")
+                    documents.append(_create_placeholder_doc(url, subtopic_name))
+                    
+            except Exception as e:
+                print(f"    ⚠️  Error fetching {url[:50]}...: {e}")
+                documents.append(_create_placeholder_doc(url, subtopic_name))
     
+    print(f"  Total documents fetched: {len(documents)}")
     state["documents"] = documents
     return state
+
+
+def _create_placeholder_doc(url: str, subtopic: str) -> Document:
+    """Creates placeholder document when fetch fails."""
+    return Document(
+        url=url,
+        title=f"Placeholder for {subtopic}",
+        content=f"Placeholder content for {url}. This would contain actual scraped text in production.",
+        subtopic=subtopic
+    )

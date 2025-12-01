@@ -2,8 +2,12 @@
 Chunk and Embed node: Chunks documents and creates embeddings for vector store.
 """
 
+import os
 from typing import List, Dict
 from graph.state import ReviewState
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
 
 
 def chunk_and_embed(state: ReviewState) -> ReviewState:
@@ -11,10 +15,11 @@ def chunk_and_embed(state: ReviewState) -> ReviewState:
     Chunks documents into smaller pieces and generates embeddings.
     Stores embeddings in FAISS vector store.
     
-    TODO: Implement text chunking (RecursiveCharacterTextSplitter)
-    TODO: Generate embeddings using OpenAI or sentence-transformers
-    TODO: Initialize FAISS index and add vectors
-    TODO: Store metadata (source URL, subtopic) with each chunk
+    Implements complete RAG pipeline:
+    1. Splits documents into chunks with overlap
+    2. Generates embeddings using OpenAI
+    3. Creates FAISS index for semantic search
+    4. Stores metadata with each chunk
     
     Args:
         state: ReviewState with documents
@@ -24,47 +29,84 @@ def chunk_and_embed(state: ReviewState) -> ReviewState:
     """
     print(f"[CHUNK_EMBED] Processing {len(state['documents'])} documents")
     
-    # TODO: from langchain.text_splitter import RecursiveCharacterTextSplitter
-    # TODO: from langchain_openai import OpenAIEmbeddings
-    # TODO: from langchain_community.vectorstores import FAISS
+    if not state["documents"]:
+        print("  ⚠️  No documents to process")
+        state["chunks"] = []
+        state["vector_store"] = None
+        return state
     
-    # TODO: Chunk all documents
-    # splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-    # chunks = []
-    # for doc in state["documents"]:
-    #     doc_chunks = splitter.split_text(doc.content)
-    #     for chunk_text in doc_chunks:
-    #         chunks.append({
-    #             "text": chunk_text,
-    #             "metadata": {
-    #                 "url": doc.url,
-    #                 "title": doc.title,
-    #                 "subtopic": doc.subtopic
-    #             }
-    #         })
-    
-    # TODO: Generate embeddings
-    # embeddings = OpenAIEmbeddings()
-    
-    # TODO: Create FAISS vector store
-    # texts = [chunk["text"] for chunk in chunks]
-    # metadatas = [chunk["metadata"] for chunk in chunks]
-    # vector_store = FAISS.from_texts(texts, embeddings, metadatas=metadatas)
-    
-    # Placeholder implementation
-    chunks: List[Dict] = []
-    for doc in state["documents"]:
-        # Mock chunking
-        chunks.append({
-            "text": doc.content[:500],  # First 500 chars
-            "metadata": {
-                "url": doc.url,
-                "title": doc.title,
-                "subtopic": doc.subtopic
-            }
-        })
-    
-    state["chunks"] = chunks
-    state["vector_store"] = None  # Placeholder, will be FAISS instance
+    try:
+        # Initialize text splitter
+        splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000,
+            chunk_overlap=200,
+            length_function=len,
+            separators=["\n\n", "\n", ". ", " ", ""]
+        )
+        
+        print("  Chunking documents...")
+        chunks = []
+        texts = []
+        metadatas = []
+        
+        # Chunk all documents
+        for doc in state["documents"]:
+            doc_chunks = splitter.split_text(doc.content)
+            
+            for chunk_text in doc_chunks:
+                chunks.append({
+                    "text": chunk_text,
+                    "metadata": {
+                        "url": doc.url,
+                        "title": doc.title,
+                        "subtopic": doc.subtopic
+                    }
+                })
+                texts.append(chunk_text)
+                metadatas.append({
+                    "url": doc.url,
+                    "title": doc.title,
+                    "subtopic": doc.subtopic
+                })
+        
+        print(f"  Created {len(chunks)} chunks from {len(state['documents'])} documents")
+        
+        # Generate embeddings and create FAISS vector store
+        print("  Generating embeddings and creating FAISS index...")
+        
+        embeddings = OpenAIEmbeddings(
+            api_key=os.getenv("OPENAI_API_KEY")
+        )
+        
+        # Create FAISS vector store
+        vector_store = FAISS.from_texts(
+            texts=texts,
+            embedding=embeddings,
+            metadatas=metadatas
+        )
+        
+        print(f"  ✓ FAISS index created with {len(texts)} vectors")
+        
+        state["chunks"] = chunks
+        state["vector_store"] = vector_store
+        
+    except Exception as e:
+        print(f"  ⚠️  Error in chunking/embedding: {e}")
+        print("  Using placeholder chunks without embeddings")
+        
+        # Fallback: Create simple chunks without embeddings
+        chunks = []
+        for doc in state["documents"]:
+            chunks.append({
+                "text": doc.content[:1000],  # First 1000 chars
+                "metadata": {
+                    "url": doc.url,
+                    "title": doc.title,
+                    "subtopic": doc.subtopic
+                }
+            })
+        
+        state["chunks"] = chunks
+        state["vector_store"] = None
     
     return state
