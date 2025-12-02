@@ -55,3 +55,5 @@ class ReviewState(TypedDict):
     vector_store: Optional[any]  # FAISS vector store
     _search_results: Optional[Dict[str, List[str]]]  # URLs from search, keyed by subtopic name
     _retrieved_chunks: Optional[Dict[str, List[Dict]]]  # Retrieved chunks per subtopic
+    _quality_passed: Optional[bool]  # Quality check result
+    _retry_count: Optional[int]  # Number of search retries

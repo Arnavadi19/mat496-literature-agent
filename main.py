@@ -21,20 +21,28 @@ from graph.state import ReviewState
 from graph.nodes.planner import plan_subtopics
 from graph.nodes.searcher import search_web
 from graph.nodes.fetcher import fetch_pages
+from graph.nodes.quality_check import check_quality, should_retry_search
 from graph.nodes.chunk_embed import chunk_and_embed
 from graph.nodes.retriever import retrieve_context
 from graph.nodes.summarizer import summarize_subtopics
 from graph.nodes.synthesizer import synthesize_review
 
 
-def create_review_graph() -> StateGraph:
+def build_graph() -> StateGraph:
     """
-    Constructs the LangGraph for the literature review workflow.
+    Constructs the LangGraph workflow with conditional edges.
     
-    Graph structure:
-        START -> plan_subtopics -> search_web -> fetch_pages 
-        -> chunk_embed -> retrieve_context -> summarize_subtopics 
-        -> synthesize_review -> END
+    Graph flow:
+    1. Planner → Generates subtopics
+    2. Searcher → Searches web for URLs
+    3. Fetcher → Fetches webpage content
+    4. Quality Check → Evaluates results
+       - If quality low and retries available: retry searcher
+       - Otherwise: continue to RAG pipeline
+    5. Chunk & Embed → Creates vector store
+    6. Retriever → Semantic retrieval
+    7. Summarizer → Per-subtopic summaries
+    8. Synthesizer → Final literature review -> END
     
     Returns:
         Compiled StateGraph ready for execution
@@ -43,23 +51,35 @@ def create_review_graph() -> StateGraph:
     workflow = StateGraph(ReviewState)
     
     # Add nodes (each is a function that takes state and returns updated state)
-    workflow.add_node("plan_subtopics", plan_subtopics)
-    workflow.add_node("search_web", search_web)
-    workflow.add_node("fetch_pages", fetch_pages)
+    workflow.add_node("planner", plan_subtopics)
+    workflow.add_node("searcher", search_web)
+    workflow.add_node("fetcher", fetch_pages)
+    workflow.add_node("quality_check", check_quality)
     workflow.add_node("chunk_embed", chunk_and_embed)
-    workflow.add_node("retrieve_context", retrieve_context)
-    workflow.add_node("summarize_subtopics", summarize_subtopics)
-    workflow.add_node("synthesize_review", synthesize_review)
+    workflow.add_node("retriever", retrieve_context)
+    workflow.add_node("summarizer", summarize_subtopics)
+    workflow.add_node("synthesizer", synthesize_review)
     
-    # Define edges (workflow flow)
-    workflow.set_entry_point("plan_subtopics")
-    workflow.add_edge("plan_subtopics", "search_web")
-    workflow.add_edge("search_web", "fetch_pages")
-    workflow.add_edge("fetch_pages", "chunk_embed")
-    workflow.add_edge("chunk_embed", "retrieve_context")
-    workflow.add_edge("retrieve_context", "summarize_subtopics")
-    workflow.add_edge("summarize_subtopics", "synthesize_review")
-    workflow.add_edge("synthesize_review", END)
+    # Define edges
+    workflow.set_entry_point("planner")
+    workflow.add_edge("planner", "searcher")
+    workflow.add_edge("searcher", "fetcher")
+    workflow.add_edge("fetcher", "quality_check")
+    
+    # Conditional edge: retry search or continue to RAG
+    workflow.add_conditional_edges(
+        "quality_check",
+        should_retry_search,
+        {
+            "retry": "searcher",  # Go back to searcher
+            "continue": "chunk_embed"  # Continue to RAG pipeline
+        }
+    )
+    
+    workflow.add_edge("chunk_embed", "retriever")
+    workflow.add_edge("retriever", "summarizer")
+    workflow.add_edge("summarizer", "synthesizer")
+    workflow.add_edge("synthesizer", END)
     
     # Compile the graph
     return workflow.compile()
@@ -90,6 +110,8 @@ def run_literature_review(topic: str) -> Dict:
         "vector_store": None,
         "_search_results": None,
         "_retrieved_chunks": None,
+        "_quality_passed": None,
+        "_retry_count": 0,
     }
     
     # Create and run the graph

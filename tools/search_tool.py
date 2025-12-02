@@ -1,17 +1,16 @@
 """
-Web search tool implementation.
+Free web search tools for literature review.
 
-Uses DuckDuckGo search - completely FREE, no API key required!
-
-For production use, you can optionally integrate:
-- SerpAPI (requires API key, paid)
-- Brave Search API (requires API key, has free tier)
+This module provides search functionality using DuckDuckGo (free, no API key)
+and optional paid services like SerpAPI.
 """
 
+import os
 from typing import List, Dict, Optional
+from cache import get_cached_search, cache_search_results
 
 
-def search_duckduckgo(query: str, num_results: int = 5) -> List[Dict[str, str]]:
+def search_duckduckgo(query: str, num_results: int = 5, use_cache: bool = True) -> List[Dict[str, str]]:
     """
     Search using DuckDuckGo (FREE - no API key required).
     
@@ -24,10 +23,17 @@ def search_duckduckgo(query: str, num_results: int = 5) -> List[Dict[str, str]]:
     Args:
         query: Search query (simple keywords work best)
         num_results: Number of results to return (default: 5)
+        use_cache: Whether to use cached results (default: True)
         
     Returns:
         List of dicts with 'title', 'url', 'snippet'
     """
+    # Check cache first
+    if use_cache:
+        cached = get_cached_search(query)
+        if cached is not None:
+            return cached[:num_results]
+    
     try:
         from ddgs import DDGS
         
@@ -43,6 +49,10 @@ def search_duckduckgo(query: str, num_results: int = 5) -> List[Dict[str, str]]:
                 "url": r.get("href", ""),
                 "snippet": r.get("body", "")
             })
+        
+        # Cache the results
+        if use_cache and results:
+            cache_search_results(query, results)
         
         return results
         
