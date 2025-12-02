@@ -37,7 +37,7 @@ def summarize_subtopics(state: ReviewState) -> ReviewState:
             temperature=0.3,  # Lower temperature for more focused summaries
             api_key=os.getenv("OPENAI_API_KEY")
         )
-        structured_llm = llm.with_structured_output(Summary)
+        structured_llm = llm.with_structured_output(Summary, method="function_calling")
     except Exception as e:
         print(f"  ⚠️  Error initializing OpenAI: {e}")
         llm = None

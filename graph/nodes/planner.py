@@ -48,7 +48,7 @@ def plan_subtopics(state: ReviewState) -> ReviewState:
         )
         
         # Use structured output (with_structured_output)
-        structured_llm = llm.with_structured_output(SubtopicsPlan)
+        structured_llm = llm.with_structured_output(SubtopicsPlan, method="function_calling")
         
         # Invoke LLM
         print("  Calling OpenAI for subtopic planning...")
