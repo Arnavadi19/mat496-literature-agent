@@ -23,7 +23,7 @@ def retrieve_context(state: ReviewState) -> ReviewState:
     
     # Check if vector store is available
     if not state.get("vector_store"):
-        print("  ⚠️  No vector store available, using chunk filtering fallback")
+        print("  Warning: No vector store available, using chunk filtering fallback")
         # Fallback: Filter chunks by subtopic
         for subtopic in state["subtopics"]:
             relevant_chunks = [
@@ -55,7 +55,7 @@ def retrieve_context(state: ReviewState) -> ReviewState:
                 print(f"    {subtopic.name}: {len(relevant_chunks)} chunks (semantic search)")
                 
             except Exception as e:
-                print(f"    ⚠️  Error retrieving for {subtopic.name}: {e}")
+                print(f"    Warning: Error retrieving for {subtopic.name}: {e}")
                 # Fallback to filtering
                 relevant_chunks = [
                     chunk for chunk in state["chunks"]

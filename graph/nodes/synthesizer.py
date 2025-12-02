@@ -61,10 +61,10 @@ def synthesize_review(state: ReviewState) -> ReviewState:
         response = llm.invoke(prompt)
         final_review = response.content
         
-        print("  ✓ Final review synthesized")
+        print("  Final review synthesized")
         
     except Exception as e:
-        print(f"  ⚠️  Error calling OpenAI: {e}")
+        print(f"  Warning: Error calling OpenAI: {e}")
         print("  Using placeholder review")
         
         # Fallback to placeholder

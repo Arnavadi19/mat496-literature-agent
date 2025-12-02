@@ -21,7 +21,7 @@ def save_vector_store(vector_store: FAISS, path: str) -> None:
     """
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     vector_store.save_local(path)
-    print(f"✓ Vector store saved to {path}")
+    print(f"Vector store saved to {path}")
 
 
 def load_vector_store(path: str, embeddings: Optional[OpenAIEmbeddings] = None) -> Optional[FAISS]:
@@ -44,10 +44,10 @@ def load_vector_store(path: str, embeddings: Optional[OpenAIEmbeddings] = None) 
             embeddings,
             allow_dangerous_deserialization=True  # Required for FAISS
         )
-        print(f"✓ Vector store loaded from {path}")
+        print(f"Vector store loaded from {path}")
         return vector_store
     except Exception as e:
-        print(f"⚠️  Failed to load vector store from {path}: {e}")
+        print(f"Warning: Failed to load vector store from {path}: {e}")
         return None
 
 

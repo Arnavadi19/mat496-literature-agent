@@ -47,7 +47,7 @@ def search_duckduckgo(query: str, num_results: int = 5) -> List[Dict[str, str]]:
         return results
         
     except ImportError:
-        print("⚠️  ddgs not installed. Install with: pip install ddgs")
+        print("Warning: ddgs not installed. Install with: pip install ddgs")
         print("   Using placeholder results for now.")
         # Return placeholder results if library not installed
         return [
@@ -59,7 +59,7 @@ def search_duckduckgo(query: str, num_results: int = 5) -> List[Dict[str, str]]:
             for i in range(num_results)
         ]
     except Exception as e:
-        print(f"❌ Error during search: {e}")
+        print(f"Error during search: {e}")
         return []
 
 
@@ -84,7 +84,7 @@ def search_serp(query: str, num_results: int = 5, api_key: Optional[str] = None)
         
         key = api_key or os.getenv("SERPAPI_KEY")
         if not key:
-            print("⚠️  SERPAPI_KEY not set. Falling back to DuckDuckGo.")
+            print("Warning: SERPAPI_KEY not set. Falling back to DuckDuckGo.")
             return search_duckduckgo(query, num_results)
         
         params = {
@@ -105,10 +105,10 @@ def search_serp(query: str, num_results: int = 5, api_key: Optional[str] = None)
         ]
         
     except ImportError:
-        print("⚠️  google-search-results not installed. Falling back to DuckDuckGo.")
+        print("Warning: google-search-results not installed. Falling back to DuckDuckGo.")
         return search_duckduckgo(query, num_results)
     except Exception as e:
-        print(f"❌ SerpAPI error: {e}. Falling back to DuckDuckGo.")
+        print(f"SerpAPI error: {e}. Falling back to DuckDuckGo.")
         return search_duckduckgo(query, num_results)
 
 
@@ -136,5 +136,5 @@ def search_web(query: str, backend: str = "duckduckgo", num_results: int = 5) ->
     elif backend == "serp":
         return search_serp(query, num_results)
     else:
-        print(f"⚠️  Unknown backend '{backend}'. Using DuckDuckGo.")
+        print(f"Warning: Unknown backend '{backend}'. Using DuckDuckGo.")
         return search_duckduckgo(query, num_results)

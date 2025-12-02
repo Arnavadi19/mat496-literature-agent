@@ -43,7 +43,7 @@ def search_web(state: ReviewState) -> ReviewState:
             print(f"    Found {len(valid_urls)} valid URLs")
             
         except Exception as e:
-            print(f"    ⚠️  Search failed: {e}. Using placeholder.")
+            print(f"    Warning: Search failed: {e}. Using placeholder.")
             # Fallback to placeholder URLs
             search_results[subtopic.name] = [
                 f"https://example.com/article1-{subtopic.name}",

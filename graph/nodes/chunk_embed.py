@@ -5,7 +5,7 @@ Chunk and Embed node: Chunks documents and creates embeddings for vector store.
 import os
 from typing import List, Dict
 from graph.state import ReviewState
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
@@ -30,7 +30,7 @@ def chunk_and_embed(state: ReviewState) -> ReviewState:
     print(f"[CHUNK_EMBED] Processing {len(state['documents'])} documents")
     
     if not state["documents"]:
-        print("  ⚠️  No documents to process")
+        print("  Warning: No documents to process")
         state["chunks"] = []
         state["vector_store"] = None
         return state
@@ -85,13 +85,13 @@ def chunk_and_embed(state: ReviewState) -> ReviewState:
             metadatas=metadatas
         )
         
-        print(f"  ✓ FAISS index created with {len(texts)} vectors")
+        print(f"  FAISS index created with {len(texts)} vectors")
         
         state["chunks"] = chunks
         state["vector_store"] = vector_store
         
     except Exception as e:
-        print(f"  ⚠️  Error in chunking/embedding: {e}")
+        print(f"  Warning: Error in chunking/embedding: {e}")
         print("  Using placeholder chunks without embeddings")
         
         # Fallback: Create simple chunks without embeddings

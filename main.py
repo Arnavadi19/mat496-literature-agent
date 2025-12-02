@@ -109,8 +109,8 @@ def main():
     """
     # Check for OpenAI API key
     if not os.getenv("OPENAI_API_KEY"):
-        print("❌ Error: OPENAI_API_KEY not found!")
-        print("\n📝 Please create a .env file with your API key:")
+        print("Error: OPENAI_API_KEY not found!")
+        print("\nPlease create a .env file with your API key:")
         print("   1. Copy .env.example to .env")
         print("   2. Add your OpenAI API key to .env")
         print("\nExample .env file:")
@@ -118,7 +118,7 @@ def main():
         print("   OPENAI_MODEL=gpt-4")
         return
     
-    print("✅ OpenAI API key loaded from .env file\n")
+    print("OpenAI API key loaded from .env file\n")
     
     # Example topic
     topic = "Transformer architectures in natural language processing"

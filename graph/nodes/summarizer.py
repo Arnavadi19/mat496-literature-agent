@@ -39,7 +39,7 @@ def summarize_subtopics(state: ReviewState) -> ReviewState:
         )
         structured_llm = llm.with_structured_output(Summary, method="function_calling")
     except Exception as e:
-        print(f"  ⚠️  Error initializing OpenAI: {e}")
+        print(f"  Warning: Error initializing OpenAI: {e}")
         llm = None
     
     for subtopic in state["subtopics"]:
@@ -64,10 +64,10 @@ def summarize_subtopics(state: ReviewState) -> ReviewState:
                 # Call LLM with structured output
                 summary = structured_llm.invoke(prompt)
                 summaries.append(summary)
-                print(f"    ✓ Generated summary with {len(summary.key_findings)} findings")
+                print(f"    Generated summary with {len(summary.key_findings)} findings")
                 
             except Exception as e:
-                print(f"    ⚠️  Error generating summary: {e}. Using placeholder.")
+                print(f"    Warning: Error generating summary: {e}. Using placeholder.")
                 summaries.append(_create_placeholder_summary(subtopic.name, chunks))
         else:
             summaries.append(_create_placeholder_summary(subtopic.name, chunks))

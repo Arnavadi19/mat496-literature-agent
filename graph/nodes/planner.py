@@ -59,7 +59,7 @@ def plan_subtopics(state: ReviewState) -> ReviewState:
         print(f"  Generated {len(result.subtopics)} subtopics")
         
     except Exception as e:
-        print(f"  ⚠️  Error calling OpenAI: {e}")
+        print(f"  Warning: Error calling OpenAI: {e}")
         print("  Using fallback placeholder subtopics")
         
         # Fallback to placeholder subtopics

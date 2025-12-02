@@ -47,14 +47,14 @@ def fetch_pages(state: ReviewState) -> ReviewState:
                             subtopic=subtopic_name
                         )
                     )
-                    print(f"    ✓ Fetched {len(content)} chars from {url[:50]}...")
+                    print(f"    Fetched {len(content)} chars from {url[:50]}...")
                 else:
                     # Fallback to placeholder if fetch fails
-                    print(f"    ⚠️  Failed to fetch {url[:50]}... Using placeholder")
+                    print(f"    Warning: Failed to fetch {url[:50]}... Using placeholder")
                     documents.append(_create_placeholder_doc(url, subtopic_name))
                     
             except Exception as e:
-                print(f"    ⚠️  Error fetching {url[:50]}...: {e}")
+                print(f"    Warning: Error fetching {url[:50]}...: {e}")
                 documents.append(_create_placeholder_doc(url, subtopic_name))
     
     print(f"  Total documents fetched: {len(documents)}")
