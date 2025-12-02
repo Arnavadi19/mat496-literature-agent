@@ -104,9 +104,9 @@ python main.py
 
 ## Implementation Roadmap
 
-### Phase 1: Core LLM Integration ✅ **COMPLETED**
+### Phase 1: Core LLM Integration  **COMPLETED**
 
-**Status**: ✅ All core LLM integration nodes implemented
+**Status**: All core LLM integration nodes implemented
 
 **Completed Tasks**:
 - [x] **Planner Node** (`graph/nodes/planner.py`)
@@ -133,9 +133,9 @@ python main.py
 
 ---
 
-### Phase 2: Search & Fetch Integration ✅ **COMPLETED**
+### Phase 2: Search & Fetch Integration **COMPLETED**
 
-**Status**: ✅ Free DuckDuckGo search integrated (no API key required)
+**Status**: Free DuckDuckGo search integrated (no API key required)
 
 **Completed Tasks**:
 - [x] **Search Tool** (`tools/search_tool.py`)
@@ -163,7 +163,7 @@ python main.py
 
 ---
 
-### Phase 3: RAG Pipeline (Vector Store + Retrieval) ⏳ **NEXT**
+### Phase 3: RAG Pipeline (Vector Store + Retrieval) **NEXT**
 
 **Tasks**:
 - [ ] **Search Tool** (`tools/search_tool.py`)
@@ -190,9 +190,9 @@ python main.py
   - [ ] Handle fetch failures gracefully (log and continue)
 
 **Resources**:
-### Phase 3: RAG Pipeline (Vector Store + Retrieval) ✅ **COMPLETED**
+### Phase 3: RAG Pipeline (Vector Store + Retrieval) **COMPLETED**
 
-**Status**: ✅ Full RAG pipeline with FAISS semantic search implemented
+**Status**: Full RAG pipeline with FAISS semantic search implemented
 
 **Completed Tasks**:
 - [x] **Chunk & Embed Node** (`graph/nodes/chunk_embed.py`)
@@ -225,7 +225,7 @@ python main.py
 
 ---
 
-### Phase 4: Advanced Features (Optional)
+### Phase 4: Advanced Features
 
 - [ ] **Conditional Edges**
   - Add quality checks (e.g., if too few documents, retry search)
@@ -391,23 +391,23 @@ MIT License - feel free to extend and adapt!
 
 ---
 
-## 🚧 Current Status
+## Current Status
 
-**Project Phase**: ✅ Phase 1-3 Complete | Working on Phase 4 (Advanced Features)
+**Project Phase**: Phase 1-3 Complete | Working on Phase 4 (Advanced Features)
 
 **What's Working**:
-- ✅ **Phase 1**: LLM-powered subtopic planning, summarization, and synthesis
-- ✅ **Phase 2**: Free DuckDuckGo web search (no API key required)
-- ✅ **Phase 3**: Full RAG pipeline with FAISS semantic search
+- **Phase 1**: LLM-powered subtopic planning, summarization, and synthesis
+- **Phase 2**: Free DuckDuckGo web search (no API key required)
+- **Phase 3**: Full RAG pipeline with FAISS semantic search
   - Document chunking with overlap
   - OpenAI embeddings generation
   - FAISS vector store for semantic retrieval
   - Real web content fetching
-- ✅ Complete end-to-end LangGraph workflow
+- Complete end-to-end LangGraph workflow
 
 **What's Optional** (Phase 4-5):
-- ⏳ Advanced features (streaming, caching, MCP tools)
-- ⏳ Production hardening (comprehensive testing, CLI interface)
+- Advanced features (streaming, caching, MCP tools)
+- Production hardening (comprehensive testing, CLI interface)
 
 **Next Steps**:
 1. Set `OPENAI_API_KEY` environment variable
