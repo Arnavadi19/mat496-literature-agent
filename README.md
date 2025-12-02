@@ -10,7 +10,7 @@ This project implements an autonomous AI agent that generates comprehensive acad
 
 This project aligns with course objectives by implementing a practical agentic system using state-of-the-art techniques in natural language processing and information retrieval. It demonstrates key concepts including LangGraph workflows, Retrieval-Augmented Generation (RAG) pipelines, vector embeddings, semantic search with FAISS, and structured LLM outputs. The agent architecture showcases how multiple AI components can work together autonomously to solve complex research tasks.
 
-As a researcher in computer vision, I spend considerable time browsing the internet for papers and articles on novel techniques. Since the inception of agentic AI, I wanted a search tool (similar to ChatGPT Deep Research) that would conduct preliminary research automatically, saving time and streamlining the literature review process. This project addresses that need by automating the tedious task of gathering, synthesizing, and organizing research materials.
+As a researcher in computer vision, I spend considerable time browsing the internet for papers and articles on novel techniques. Since the inception of agentic AI, I wanted a search tool (similar to ChatGPT Deep Research) that would conduct preliminary research automatically, saving time and streamlining the literature review process. Although this project is far from finished, it addresses that need by automating the tedious task of gathering, synthesizing, and organizing research materials.
 
 ## Project Overview
 
