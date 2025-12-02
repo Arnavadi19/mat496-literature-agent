@@ -2,6 +2,16 @@
 
 A modern AI-powered literature review assistant built with **LangGraph**, **LangChain**, and **OpenAI**, demonstrating cutting-edge agentic AI concepts including RAG, tool calling, and structured outputs.
 
+## Overview
+
+This project implements an autonomous AI agent that generates comprehensive academic literature reviews on any research topic. The agent uses LangGraph to orchestrate a multi-stage workflow: planning subtopics with GPT-4, searching the web with DuckDuckGo, fetching and processing documents, building a FAISS vector store for semantic search, and synthesizing a complete literature review. The system demonstrates agent architectures including conditional edges for quality checks, retry logic, and intelligent caching.
+
+## Motivation
+
+This project aligns with course objectives by implementing a practical agentic system using state-of-the-art techniques in natural language processing and information retrieval. It demonstrates key concepts including LangGraph workflows, Retrieval-Augmented Generation (RAG) pipelines, vector embeddings, semantic search with FAISS, and structured LLM outputs. The agent architecture showcases how multiple AI components can work together autonomously to solve complex research tasks.
+
+As a researcher in computer vision, I spend considerable time browsing the internet for papers and articles on novel techniques. Since the inception of agentic AI, I wanted a search tool (similar to ChatGPT Deep Research) that would conduct preliminary research automatically, saving time and streamlining the literature review process. This project addresses that need by automating the tedious task of gathering, synthesizing, and organizing research materials.
+
 ## Project Overview
 
 This agent autonomously conducts comprehensive literature reviews by:
@@ -241,7 +251,7 @@ python main.py
   - Cache statistics and management utilities
   - Automatic cache invalidation
 
-**Skipped** (Out of scope for this project):
+**Skipped** (Do not have enough time left before the deadline to finish this.):
 - [ ] MCP Tools Integration
 - [ ] Streaming Output
 - [ ] Multi-Agent Collaboration

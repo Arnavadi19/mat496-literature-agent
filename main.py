@@ -124,19 +124,35 @@ def build_graph() -> StateGraph:
     return workflow.compile()
 
 
-def run_literature_review(topic: str) -> Dict:
+def main():
     """
-    Executes the literature review workflow for a given topic.
+    Main function to run the literature review agent.
     
-    Args:
-        topic: Research topic to review
-        
-    Returns:
-        Final state with completed literature review
+    Parses command-line arguments, validates configuration,
+    and executes the literature review workflow.
     """
-    print(f"\n{'='*60}")
+    # Parse command-line arguments
+    args = parse_arguments()
+    
+    # Check for OpenAI API key
+    if not os.getenv("OPENAI_API_KEY"):
+        print("Error: OPENAI_API_KEY not found!")
+        print("\nPlease create a .env file with your API key:")
+        print("   1. Copy .env.example to .env")
+        print("   2. Add your OpenAI API key to .env")
+        print("\nExample .env file:")
+        print("   OPENAI_API_KEY=sk-your-key-here")
+        print("   OPENAI_MODEL=gpt-4")
+        return
+    
+    print("OpenAI API key loaded from .env file\n")
+    
+    # Use topic from command-line arguments
+    topic = args.topic
+    
+    print("\n" + "="*60)
     print(f"Starting Literature Review for: {topic}")
-    print(f"{'='*60}\n")
+    print("="*60 + "\n")
     
     # Create initial state
     initial_state: ReviewState = {
@@ -154,8 +170,6 @@ def run_literature_review(topic: str) -> Dict:
     }
     
     # Create and run the graph
-    graph = create_review_graph()
-    final_state = graph.invoke(initial_state)
     graph = build_graph()
     result = graph.invoke(initial_state)
     
