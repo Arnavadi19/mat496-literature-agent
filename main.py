@@ -88,6 +88,8 @@ def run_literature_review(topic: str) -> Dict:
         "summaries": [],
         "final_review": None,
         "vector_store": None,
+        "_search_results": None,
+        "_retrieved_chunks": None,
     }
     
     # Create and run the graph

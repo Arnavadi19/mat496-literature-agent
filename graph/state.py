@@ -43,6 +43,8 @@ class ReviewState(TypedDict):
         summaries: Per-subtopic academic summaries
         final_review: Complete synthesized literature review
         vector_store: FAISS vector store instance (optional)
+        _search_results: Internal field for URLs from search (Dict[subtopic_name, List[url]])
+        _retrieved_chunks: Internal field for retrieved chunks per subtopic
     """
     topic: str
     subtopics: List[Subtopic]
@@ -51,3 +53,5 @@ class ReviewState(TypedDict):
     summaries: List[Summary]
     final_review: Optional[str]
     vector_store: Optional[any]  # FAISS vector store
+    _search_results: Optional[Dict[str, List[str]]]  # URLs from search, keyed by subtopic name
+    _retrieved_chunks: Optional[Dict[str, List[Dict]]]  # Retrieved chunks per subtopic
